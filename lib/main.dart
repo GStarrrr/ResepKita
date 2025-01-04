@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Your App',
+      title: 'ResepKita',
       initialRoute: '/', // You can set the initial route to `/`
       routes: {
         '/': (context) => const Welcome(),
