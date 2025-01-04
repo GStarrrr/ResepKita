@@ -30,11 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  provider: ^6.0.5 # untuk state management
+  image_picker: ^0.8.7 # untuk memilih gambar
+  flutter_slidable: ^3.0.0 # untuk swipe item list
+  path_provider: ^2.0.14 # untuk menyimpan file lokal
   concentric_transition: ^1.0.3
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   searchfield: ^1.2.1
 

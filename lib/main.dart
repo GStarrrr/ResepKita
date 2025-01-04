@@ -1,7 +1,9 @@
+import 'package:coba/signup.dart';
 import 'package:flutter/material.dart';
 import 'wellcome.dart';
-import 'login.dart';
+import 'signin.dart';
 import 'homepage.dart';
+import 'dahsboard.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,8 +21,10 @@ class MyApp extends StatelessWidget {
       initialRoute: '/', // You can set the initial route to `/`
       routes: {
         '/': (context) => const Welcome(),
-        '/login': (context) => const Login(),
+        '/login': (context) => const Signin(),
+        '/signup': (context) => const Signup(),
         '/homepage': (context) => const homepage(),
+        '/dashboard': (context) => AdminDashboard(),
       },
     );
   }
