@@ -1,25 +1,15 @@
 import 'package:flutter/material.dart';
+import 'history.dart'; // Import halaman history.dart
+import 'favorite.dart'; // Import halaman favorite.dart
 
-class home extends StatelessWidget {
-  const home({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text(
-      'homepage',
-      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-    );
-  }
-}
-
-class homepage extends StatefulWidget {
-  const homepage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<homepage> createState() => _homepageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _homepageState extends State<homepage> {
+class _HomePageState extends State<HomePage> {
   String selectedCategory = '';
 
   final Map<String, List<String>> recipesByCategory = {
@@ -30,11 +20,34 @@ class _homepageState extends State<homepage> {
     'Baked': ['Baked Cake', 'Baked Lasagna'],
   };
 
+  int _selectedIndex = 0; // Track which index is selected
+
+  // Handle Bottom Navigation Item Selection
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    if (index == 1) {
+      // Navigate to HistoryPage
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const history()),
+      );
+    } else if (index == 2) {
+      // Navigate to FavoritePage
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const favorite()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Resepkita'),
+        title: const Text('Resepkita'),
         centerTitle: true,
         backgroundColor: Colors.orange,
         elevation: 0,
@@ -53,22 +66,15 @@ class _homepageState extends State<homepage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Resep Terbaru
-                SectionTitle(title: 'Resep Terbaru'),
-                RecipeList(recipes: ['Resep 1', 'Resep 2', 'Resep 3']),
-
-                SizedBox(height: 20),
-
-                // Resep Terpopular
-                SectionTitle(title: 'Resep Terpopular'),
-                RecipeList(recipes: ['Resep A', 'Resep B', 'Resep C']),
-
-                SizedBox(height: 20),
-
-                // Pengkategorian Resep
-                SectionTitle(title: 'Kategori Resep'),
+                const SectionTitle(title: 'Resep Terbaru'),
+                const RecipeList(recipes: ['Resep 1', 'Resep 2', 'Resep 3']),
+                const SizedBox(height: 20),
+                const SectionTitle(title: 'Resep Terpopular'),
+                const RecipeList(recipes: ['Resep A', 'Resep B', 'Resep C']),
+                const SizedBox(height: 20),
+                const SectionTitle(title: 'Kategori Resep'),
                 RecipeCategories(
-                  categories: [
+                  categories: const [
                     {'name': 'Fried', 'icon': Icons.local_fire_department},
                     {'name': 'Steamed', 'icon': Icons.cloud},
                     {'name': 'Sauteed', 'icon': Icons.kitchen},
@@ -81,12 +87,9 @@ class _homepageState extends State<homepage> {
                     });
                   },
                 ),
-
-                SizedBox(height: 20),
-
-                // Resep Berdasarkan Kategori Terpilih
+                const SizedBox(height: 20),
                 if (selectedCategory.isNotEmpty) ...[
-                  SectionTitle(title: 'Resep ${selectedCategory}'),
+                  SectionTitle(title: 'Resep $selectedCategory'),
                   RecipeList(
                     recipes: recipesByCategory[selectedCategory] ?? [],
                   ),
@@ -96,20 +99,21 @@ class _homepageState extends State<homepage> {
           ),
         ),
       ),
-      // Bottom Navigation Bar
       bottomNavigationBar: BottomNavigationBar(
-        items: [
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'homepage',
+            label: 'Homepage',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
-            label: 'history',
+            label: 'History',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
-            label: 'favorites',
+            label: 'Favorites',
           ),
         ],
       ),
@@ -120,7 +124,7 @@ class _homepageState extends State<homepage> {
 class SectionTitle extends StatelessWidget {
   final String title;
 
-  const SectionTitle({required this.title});
+  const SectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +145,7 @@ class SectionTitle extends StatelessWidget {
 class RecipeList extends StatelessWidget {
   final List<String> recipes;
 
-  const RecipeList({required this.recipes});
+  const RecipeList({super.key, required this.recipes});
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +156,7 @@ class RecipeList extends StatelessWidget {
         itemCount: recipes.length,
         itemBuilder: (context, index) {
           return Card(
-            margin: EdgeInsets.symmetric(horizontal: 8.0),
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
@@ -189,7 +193,7 @@ class RecipeCategories extends StatelessWidget {
   final List<Map<String, dynamic>> categories;
   final ValueChanged<String> onCategorySelected;
 
-  const RecipeCategories({required this.categories, required this.onCategorySelected});
+  const RecipeCategories({super.key, required this.categories, required this.onCategorySelected});
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +207,7 @@ class RecipeCategories extends StatelessWidget {
             avatar: Icon(category['icon'], color: Colors.white),
             label: Text(
               category['name'],
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),

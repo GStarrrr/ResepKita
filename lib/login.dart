@@ -1,5 +1,6 @@
+import 'package:coba/homepage.dart';
 import 'package:flutter/material.dart';
-import 'homepage.dart'; // Pastikan file homepage.dart sudah ada
+// Pastikan file homepage.dart sudah ada
 
 class Login extends StatelessWidget {
   const Login({super.key});
@@ -96,7 +97,7 @@ class Login extends StatelessWidget {
                         // Navigasi ke halaman homepage
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const homepage()),
+                          MaterialPageRoute(builder: (context) => const HomePage()),
                         );
                       },
                       style: ElevatedButton.styleFrom(

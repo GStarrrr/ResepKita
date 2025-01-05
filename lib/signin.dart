@@ -1,5 +1,6 @@
+import 'package:coba/homepage.dart';
 import 'package:flutter/material.dart';
-import 'homepage.dart'; // Pastikan file homepage.dart sudah ada
+// Pastikan file homepage.dart sudah ada
 import 'signup.dart';
 
 class Signin extends StatelessWidget {
@@ -101,7 +102,7 @@ class Signin extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const homepage()),
+                              builder: (context) => const HomePage()),
                         );
                       },
                       style: ElevatedButton.styleFrom(

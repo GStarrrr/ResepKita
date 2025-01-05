@@ -3,7 +3,7 @@ import 'package:concentric_transition/concentric_transition.dart';
 
 // Stateless Widget for Title
 class WelcomeTitle extends StatelessWidget {
-  const WelcomeTitle({Key? key}) : super(key: key);
+  const WelcomeTitle({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class WelcomeTitle extends StatelessWidget {
 
 // Stateful Widget for Welcome
 class Welcome extends StatefulWidget {
-  const Welcome({Key? key}) : super(key: key);
+  const Welcome({super.key});
 
   @override
   _WelcomeState createState() => _WelcomeState();
@@ -117,7 +117,7 @@ class _WelcomeState extends State<Welcome> {
           child: Container(
             width: circleSize,
             height: circleSize,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white,
             ),
