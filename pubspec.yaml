@@ -30,8 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.0.5 # untuk state management
-  image_picker: ^0.8.7 # untuk memilih gambar
+  provider: ^6.0.5 
+  image_picker: ^0.8.5+3
+  file_picker: ^5.2.3
   flutter_slidable: ^3.0.0 # untuk swipe item list
   path_provider: ^2.0.14 # untuk menyimpan file lokal
   concentric_transition: ^1.0.3

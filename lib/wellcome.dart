@@ -69,7 +69,7 @@ class _WelcomeState extends State<Welcome> {
           );
         },
         onFinish: () {
-          Navigator.pushReplacementNamed(context, '/login');
+          Navigator.pushReplacementNamed(context, '/Admin');
         },
       ),
     );
@@ -129,7 +129,7 @@ class _WelcomeState extends State<Welcome> {
               ),
               onPressed: () {
                 if (isLastPage) {
-                  Navigator.pushReplacementNamed(context, '/login');
+                  Navigator.pushReplacementNamed(context, '/Admin');
                 } else {
                   _pageController.animateToPage(
                     currentIndex + 1,

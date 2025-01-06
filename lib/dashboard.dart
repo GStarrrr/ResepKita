@@ -1,17 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
-class Admin extends StatelessWidget {
-  const Admin({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text(
-      'Admin',
-      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-    );
-  }
-}
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 
 class Dashboard2 extends StatefulWidget {
   const Dashboard2({super.key});
@@ -24,9 +15,19 @@ class _Dashboard2State extends State<Dashboard2> {
   int _selectedIndex = 0;
 
   // Data dummy untuk daftar resep
-  final List<Map<String, String>> _recipes = [
-    {'name': 'Resep 1', 'description': 'Deskripsi singkat resep 1'},
-    {'name': 'Resep 2', 'description': 'Deskripsi singkat resep 2'},
+  final List<Map<String, dynamic>> _recipes = [
+    {
+      'name': 'Resep 1',
+      'description': 'Deskripsi singkat resep 1',
+      'image': null,
+      'pdf': null
+    },
+    {
+      'name': 'Resep 2',
+      'description': 'Deskripsi singkat resep 2',
+      'image': null,
+      'pdf': null
+    },
   ];
 
   // Halaman utama Dashboard
@@ -70,7 +71,11 @@ class _Dashboard2State extends State<Dashboard2> {
             ),
             const SizedBox(height: 20),
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Nama Admin'),
+              decoration: InputDecoration(
+                labelText: 'Nama Admin',
+                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.person),
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Nama tidak boleh kosong';
@@ -78,8 +83,13 @@ class _Dashboard2State extends State<Dashboard2> {
                 return null;
               },
             ),
+            const SizedBox(height: 10),
             TextFormField(
-              decoration: const InputDecoration(labelText: 'Email'),
+              decoration: InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.email),
+              ),
               validator: (value) {
                 if (value == null || !value.contains('@')) {
                   return 'Email tidak valid';
@@ -87,9 +97,14 @@ class _Dashboard2State extends State<Dashboard2> {
                 return null;
               },
             ),
+            const SizedBox(height: 10),
             TextFormField(
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
+              decoration: InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock),
+              ),
               validator: (value) {
                 if (value == null || value.length < 6) {
                   return 'Password minimal 6 karakter';
@@ -106,6 +121,7 @@ class _Dashboard2State extends State<Dashboard2> {
                   );
                 }
               },
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
               child: const Text('Daftar'),
             ),
           ],
@@ -122,40 +138,125 @@ class _Dashboard2State extends State<Dashboard2> {
         backgroundColor: Colors.orange,
         child: const Icon(Icons.add),
       ),
-      body: ListView.builder(
-        itemCount: _recipes.length,
-        itemBuilder: (context, index) {
-          final recipe = _recipes[index];
-          return Slidable(
-            key: ValueKey(index),
-            startActionPane: ActionPane(
-              motion: const ScrollMotion(),
-              children: [
-                SlidableAction(
-                  onPressed: (context) {
-                    _editRecipe(index);
-                  },
-                  icon: Icons.edit,
-                  label: 'Edit',
-                  backgroundColor: Colors.blue,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: _recipes.length,
+          itemBuilder: (context, index) {
+            final recipe = _recipes[index];
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Slidable(
+                key: ValueKey(index),
+                startActionPane: ActionPane(
+                  motion: const DrawerMotion(),
+                  children: [
+                    SlidableAction(
+                      onPressed: (context) {
+                        _editRecipe(index);
+                      },
+                      icon: Icons.edit,
+                      label: 'Edit',
+                      backgroundColor: Colors.blue,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    SlidableAction(
+                      onPressed: (context) {
+                        _deleteRecipe(index);
+                      },
+                      icon: Icons.delete,
+                      label: 'Hapus',
+                      backgroundColor: Colors.red,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ],
                 ),
-                SlidableAction(
-                  onPressed: (context) {
-                    _deleteRecipe(index);
-                  },
-                  icon: Icons.delete,
-                  label: 'Hapus',
-                  backgroundColor: Colors.red,
+                child: ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: recipe['image'] != null
+                        ? Image.file(
+                            recipe['image'],
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          )
+                        : const Icon(Icons.food_bank, color: Colors.orange, size: 50),
+                  ),
+                  title: Text(
+                    recipe['name'],
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  subtitle: Text(
+                    recipe['description'],
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  onTap: () => _showRecipePreview(recipe),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 ),
-              ],
-            ),
-            child: ListTile(
-              leading: const Icon(Icons.food_bank, color: Colors.orange),
-              title: Text(recipe['name']!),
-              subtitle: Text(recipe['description']!),
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  // Dialog Preview Resep
+  void _showRecipePreview(Map<String, dynamic> recipe) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(recipe['name']),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (recipe['image'] != null)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.file(
+                    recipe['image'],
+                    width: double.infinity,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              else
+                const Icon(Icons.food_bank, size: 100, color: Colors.orange),
+              const SizedBox(height: 10),
+              const Text('Deskripsi:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 5),
+              Text(recipe['description']),
+              const SizedBox(height: 10),
+              if (recipe['pdf'] != null)
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Logika untuk membuka PDF
+                  },
+                  icon: const Icon(Icons.picture_as_pdf),
+                  label: const Text('Lihat PDF'),
+                ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
       ),
     );
   }
@@ -164,23 +265,68 @@ class _Dashboard2State extends State<Dashboard2> {
   void _showAddRecipeDialog() {
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
+    File? selectedImage;
+    File? selectedPdf;
+
+    Future<void> pickImage() async {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          selectedImage = File(pickedFile.path);
+        });
+      }
+    }
+
+    Future<void> pickPdf() async {
+      final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          selectedPdf = File(result.files.single.path!);
+        });
+      }
+    }
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
         title: const Text('Tambah Resep'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Nama Resep'),
-            ),
-            TextField(
-              controller: descriptionController,
-              decoration: const InputDecoration(labelText: 'Deskripsi'),
-            ),
-          ],
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Nama Resep',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Deskripsi',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: pickImage,
+                icon: const Icon(Icons.image),
+                label: const Text('Pilih Gambar'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: pickPdf,
+                icon: const Icon(Icons.picture_as_pdf),
+                label: const Text('Pilih PDF'),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
@@ -195,6 +341,8 @@ class _Dashboard2State extends State<Dashboard2> {
                   _recipes.add({
                     'name': nameController.text,
                     'description': descriptionController.text,
+                    'image': selectedImage,
+                    'pdf': selectedPdf,
                   });
                 });
                 Navigator.pop(context);
@@ -212,9 +360,99 @@ class _Dashboard2State extends State<Dashboard2> {
 
   // Fungsi Edit Resep
   void _editRecipe(int index) {
-    // Tambahkan logika edit di sini
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Edit resep ${_recipes[index]['name']}')),
+    final nameController = TextEditingController(text: _recipes[index]['name']);
+    final descriptionController =
+        TextEditingController(text: _recipes[index]['description']);
+    File? selectedImage = _recipes[index]['image'];
+    File? selectedPdf = _recipes[index]['pdf'];
+
+    Future<void> pickImage() async {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          selectedImage = File(pickedFile.path);
+        });
+      }
+    }
+
+    Future<void> pickPdf() async {
+      final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+      if (result != null && result.files.single.path != null) {
+        setState(() {
+          selectedPdf = File(result.files.single.path!);
+        });
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text('Edit Resep'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Nama Resep',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Deskripsi',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: pickImage,
+                icon: const Icon(Icons.image),
+                label: const Text('Pilih Gambar'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton.icon(
+                onPressed: pickPdf,
+                icon: const Icon(Icons.picture_as_pdf),
+                label: const Text('Pilih PDF'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (nameController.text.isNotEmpty &&
+                  descriptionController.text.isNotEmpty) {
+                setState(() {
+                  _recipes[index] = {
+                    'name': nameController.text,
+                    'description': descriptionController.text,
+                    'image': selectedImage,
+                    'pdf': selectedPdf,
+                  };
+                });
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Resep berhasil diperbarui')),
+                );
+              }
+            },
+            child: const Text('Simpan'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -290,9 +528,7 @@ class _Dashboard2State extends State<Dashboard2> {
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.red),
               title: const Text('Logout'),
-              onTap: () {
-                // Tambahkan aksi logout
-              },
+              onTap: () {},
             ),
           ],
         ),
