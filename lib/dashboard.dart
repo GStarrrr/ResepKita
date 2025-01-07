@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'PreviewResepDsh.dart';
 import 'dart:io';
 
 class Dashboard2 extends StatefulWidget {
@@ -199,11 +200,14 @@ class _Dashboard2State extends State<Dashboard2> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  onTap: () => _showRecipePreview(recipe),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                ),
-              ),
-            );
+                  onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => RecipePreviewPage(recipe: recipe),
+    ),
+  );
+},),),);
           },
         ),
       ),
