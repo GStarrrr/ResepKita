@@ -1,163 +1,164 @@
 import 'package:flutter/material.dart';
-import 'homepage.dart'; 
-import 'favorite.dart'; 
 
-class history extends StatefulWidget {
-  const history({super.key});
+class History extends StatelessWidget {
+  final List<String> recipeHistory; // List data history yang diterima dari Homepage
 
-  @override
-  State<history> createState() => _historyState();
-}
-
-class _historyState extends State<history> {
-  int _selectedIndex = 1; 
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    if (index == 0) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } else if (index == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const favorite()),
-      );
-    }
-  }
-
-  final List<Map<String, String>> recipeHistory = [
-    {'name': 'Soto Ayam', 'description': 'A delicious chicken soup.'},
-    {'name': 'Nasi Goreng', 'description': 'Fried rice with spices and vegetables.'},
-    {'name': 'Mie Goreng', 'description': 'Fried noodles with vegetables.'},
-    {'name': 'Bakso', 'description': 'Indonesian meatball soup.'},
-    {'name': 'Rendang', 'description': 'Spicy beef stew.'},
-    {'name': 'Gado-Gado', 'description': 'Indonesian salad with peanut sauce.'},
-    {'name': 'Pizza', 'description': 'A delicious Pizza.'},
-    {'name': 'Sushi', 'description': 'A delicious Sushi.'},
-
-  ];
+  const History({super.key, required this.recipeHistory});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Resepkita'),
-        centerTitle: true,
+        title: const Text('History Resep'),
         backgroundColor: Colors.orange,
-        elevation: 0,
+        centerTitle: true,
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.orange.shade200, Colors.white],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GridView.builder(
-                  shrinkWrap: true, 
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, 
-                    crossAxisSpacing: 16.0, 
-                    mainAxisSpacing: 16.0, 
-                    childAspectRatio: 1.0, 
+      body: recipeHistory.isEmpty
+          ? Center(
+              child: Text(
+                'Belum ada resep yang dilihat.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(8.0),
+              itemCount: recipeHistory.length,
+              itemBuilder: (context, index) {
+                final recipe = recipeHistory[index];
+                return Card(
+                  elevation: 3,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
-                  itemCount: recipeHistory.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        
-                        print('Navigating to ${recipeHistory[index]['name']} details...');
-                      },
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        elevation: 4.0,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                recipeHistory[index]['name']!,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.orange.shade800,
-                                ),
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                recipeHistory[index]['description']!,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.orange.shade100,
+                      child: Text(
+                        recipe[0].toUpperCase(), // Huruf pertama (kapital)
+                        style: TextStyle(
+                          color: Colors.orange.shade800,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    );
-                  },
-                ),
-              ],
+                    ),
+                    title: Text(
+                      recipe,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.orange.shade800,
+                      ),
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.orange.shade400,
+                      size: 18,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecipeDetailPage(
+                            recipeName: recipe,
+                            imageAssets:
+                                'assets/${recipe.toLowerCase().replaceAll(' ', '')}.jpeg',
+                            description: 'Deskripsi lengkap untuk $recipe.',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Homepage',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'History',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-        ],
-      ),
     );
   }
 }
 
-class SectionTitle extends StatelessWidget {
-  final String title;
+class RecipeDetailPage extends StatelessWidget {
+  final String recipeName;
+  final String imageAssets;
+  final String description;
 
-  const SectionTitle({super.key, required this.title});
+  const RecipeDetailPage({
+    super.key,
+    required this.recipeName,
+    required this.imageAssets,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: Colors.orange.shade800,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(recipeName),
+        backgroundColor: Colors.orange,
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: Image.asset(
+                  imageAssets,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade50,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: const Center(
+                        child: Icon(Icons.image, size: 50, color: Colors.grey),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                recipeName,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange.shade800,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                description,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade700,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context); // Kembali ke halaman sebelumnya
+                },
+                child: const Text('Kembali'),
+              ),
+            ],
+          ),
         ),
       ),
     );

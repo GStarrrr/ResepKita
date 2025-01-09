@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'homepage.dart'; 
 import 'history.dart'; 
 
-class favorite extends StatefulWidget {
-  const favorite({super.key});
+class Favorite extends StatefulWidget {
+  const Favorite({super.key});
 
   @override
-  _favoriteState createState() => _favoriteState();
+  _FavoriteState createState() => _FavoriteState();
 }
 
-class _favoriteState extends State<favorite> {
-  int _selectedIndex = 1; 
+class _FavoriteState extends State<Favorite> {
+  int _selectedIndex = 2; // Default tab "Favorites" dipilih
+  final List<String> recipeHistory = []; // Menyimpan data history resep
 
   void _onItemTapped(int index) {
     setState(() {
@@ -20,12 +21,14 @@ class _favoriteState extends State<favorite> {
     if (index == 0) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const Homepage()),
       );
     } else if (index == 1) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const history()),
+        MaterialPageRoute(
+          builder: (context) => History(recipeHistory: recipeHistory), // Tambahkan parameter
+        ),
       );
     }
   }
@@ -45,6 +48,16 @@ class _favoriteState extends State<favorite> {
             colors: [Colors.orange.shade200, Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            'Halaman Favorit sedang dalam pengembangan.',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.orange.shade800,
+            ),
           ),
         ),
       ),
